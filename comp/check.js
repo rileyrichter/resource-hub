@@ -1,18 +1,15 @@
 const user = localStorage.getItem("email");
 
 export default function check() {
+  document.querySelector("#check-complete").classList.add("loading");
   if (localStorage.getItem("sessionData") === null) {
-    console.log("creating user");
     createUser();
   } else {
-    console.log("updating user");
     updateUser();
   }
 }
 
 function createUser() {
-  console.log(`${baseURL}tracking/create-user`);
-  console.log(airtableSession);
   const handleError = (response) => {
     if (!response.ok) {
       throw Error(` ${response.status} ${response.statusText}`);
@@ -57,7 +54,6 @@ function createUser() {
 function updateUser() {
   let e = localStorage.getItem("sessionData");
   let currentData = JSON.parse(e);
-  console.log(currentData);
   let f = currentData.fields.session;
   if (f.includes(airtableSession)) {
     localStorage.setItem(currentSession, "true");
@@ -74,8 +70,6 @@ function updateUser() {
   } else {
     let g = f.concat(airtableSession);
     let h = currentData.id;
-    console.log(g);
-    console.log(h);
 
     const handleError = (response) => {
       if (!response.ok) {
