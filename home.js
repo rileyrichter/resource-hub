@@ -3,20 +3,28 @@ const one = "one";
 const two = "two";
 const three = "three";
 const four = "four";
+const instructorClone = document.querySelector("#instructor-clone");
+const instructorContainer = document.querySelector("#instructor-container");
+const onBoardButton = document.querySelector("#onboardbutton");
 let courseCount;
 let courseCompletion = 0;
 let lastPublished;
 
 window.addEventListener("DOMContentLoaded", (event) => {
   fadeIn(document.querySelector("#loading"));
-  allPageLoad();
+  onBoardButton.addEventListener("click", toggle);
   checkLastPublish();
+});
+
+const { toggle } = window.tf.createPopup("H7zVRV0x", {
+  hidden: { email: `${localStorage.getItem("email")}` },
 });
 
 function checkCache() {
   if (localStorage.getItem("lastCached") === null) {
     localStorage.setItem("lastCached", Date.now());
     updateCache();
+    onBoardButton.click();
   } else if (Number(localStorage.getItem("lastCached")) < lastPublished) {
     localStorage.setItem("lastCached", Date.now());
     updateCache();
@@ -25,6 +33,8 @@ function checkCache() {
     updateDashboard(two);
     updateDashboard(three);
     updateDashboard(four);
+    addInstructors();
+    allPageLoad();
     fadeOut(document.querySelector("#loading"));
   }
 }
@@ -63,6 +73,8 @@ async function updateCache() {
     stashCourseInfo(two, baseURL),
     stashCourseInfo(three, baseURL),
     stashCourseInfo(four, baseURL),
+    stashInstructorInfo(baseURL),
+    stashSidebarInfo(baseURL),
   ]);
   fadeOut(document.querySelector("#loading"));
 }
@@ -95,6 +107,65 @@ function stashCourseInfo(number, baseURL) {
     });
 }
 
+function stashInstructorInfo(baseURL) {
+  const handleError = (response) => {
+    if (!response.ok) {
+      throw Error(` ${response.status} ${response.statusText}`);
+    } else {
+      return response.json();
+    }
+  };
+
+  return fetch(`${baseURL}/instructors`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then(handleError)
+    .then((data) => {
+      localStorage.setItem(`instructors`, JSON.stringify(data.items));
+    })
+    .catch(function writeError(err) {
+      console.log(err);
+    })
+    .finally(() => {
+      addInstructors();
+    });
+}
+
+function stashSidebarInfo(baseURL) {
+  const handleError = (response) => {
+    if (!response.ok) {
+      throw Error(` ${response.status} ${response.statusText}`);
+    } else {
+      return response.json();
+    }
+  };
+
+  fetch(`${baseURL}/resources`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then(handleError)
+    .then((data) => {
+      localStorage.setItem(`resources`, JSON.stringify(data.items));
+    })
+    .catch(function writeError(err) {
+      console.log(err);
+    })
+    .then(() => {
+      resourceItem.remove();
+    })
+    .finally(() => {
+      allPageLoad();
+    });
+}
+
 function updateDashboard(number) {
   let d = localStorage.getItem(`${number}-sessions`);
   let data = JSON.parse(d);
@@ -121,6 +192,23 @@ function updateDashboard(number) {
   fadeIn(document.querySelector(`#${number}-comp-wrapper`));
   courseCompletion = 0;
   courseCount = 0;
+}
+
+function addInstructors() {
+  let d = localStorage.getItem(`instructors`);
+  let data = JSON.parse(d);
+  data.sort((a, b) => a["order"] - b["order"]);
+  data.forEach((item) => {
+    let clone = instructorClone.cloneNode(true);
+    clone.id = item._id;
+    clone.querySelector(".instructor-name").innerText = item.name;
+    clone.querySelector(".instructor-title").innerText = item.title;
+    clone.querySelector(".instructor-image").src = item.image.url;
+    clone.querySelector(".instructor-bio").innerHTML = item["bio-2"];
+    instructorContainer.appendChild(clone);
+  });
+  instructorClone.remove();
+  fadeIn(document.querySelector("#instructors"));
 }
 
 function percentage(partialValue, totalValue) {

@@ -40,26 +40,36 @@ export default function getCourse(course) {
       document.querySelector(".session-resources").innerHTML =
         item["session-resources"];
       window.currentSession = item.slug;
+      window.airtableSession = item.aid;
     }
     moduleRoot.appendChild(module);
   });
   let percent = Math.round(percentage(courseCompletion, courseCount));
+  if (percent === 100 && localStorage.getItem(`${course}-complete`) === null) {
+    setTimeout(() => {
+      courseButton.click();
+    }, 1000);
+    localStorage.setItem(`${course}-complete`, true);
+  } else if (
+    percent === 100 &&
+    localStorage.getItem(`${course}-complete`) !== null
+  ) {
+    fadeIn(document.querySelector(".notice-panel"));
+  }
   progressBar.style.width = `${percent}%`;
   elPercent.innerText = percent;
   elComplete.innerText = courseCompletion;
   elTotal.innerText = courseCount;
-  $("#comp-wrapper").fadeIn();
-
+  fadeIn(document.querySelector("#comp-wrapper"));
   moduleClone.remove();
-  $("#module-wrapper").fadeIn();
-
+  fadeIn(document.querySelector("#module-wrapper"));
   if (localStorage.getItem(currentSession) !== null) {
-    $("#uncheck").fadeIn();
+    fadeIn(document.querySelector("#uncheck"));
   } else {
-    $("#check").fadeIn();
+    fadeIn(document.querySelector("#check"));
   }
-  $("#loading").fadeOut();
-  $("#content-wrapper").fadeIn();
+  fadeOut(document.querySelector("#loading"));
+  fadeIn(document.querySelector("#content-wrapper"));
 }
 
 function percentage(partialValue, totalValue) {
@@ -79,3 +89,20 @@ export {
   courseCount,
   courseCompletion,
 };
+
+function fadeOut(element) {
+  element.style.transition = "opacity 0.5s";
+  element.style.opacity = 0;
+  setTimeout(() => {
+    element.style.display = "none";
+  }, 500);
+}
+
+function fadeIn(element) {
+  element.style.display = "block";
+  element.style.opacity = 0;
+  element.style.transition = "opacity 0.5s";
+  setTimeout(() => {
+    element.style.opacity = 1;
+  }, 500);
+}
