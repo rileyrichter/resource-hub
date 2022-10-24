@@ -6,7 +6,7 @@ window.course = "one";
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 window.sessionId = urlParams.get("");
-const courseButton = document.querySelector("#coursebutton");
+window.courseButton = document.querySelector("#coursebutton");
 
 window.addEventListener("DOMContentLoaded", (event) => {
   errorHandle();
