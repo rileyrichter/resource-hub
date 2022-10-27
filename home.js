@@ -13,7 +13,7 @@ let lastPublished;
 window.addEventListener("DOMContentLoaded", (event) => {
   fadeIn(document.querySelector("#loading"));
   onBoardButton.addEventListener("click", toggle);
-  document.querySelector("#survey-buton").addEventListener("click", toggle);
+  document.querySelector("#survey-button").addEventListener("click", toggle);
   checkLastPublish();
 });
 
