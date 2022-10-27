@@ -39,6 +39,11 @@ export default function getCourse(course) {
       document.querySelector("#video").src = item["loom-link"];
       document.querySelector(".session-resources").innerHTML =
         item["session-resources"];
+      const resourceContent = document.querySelector(".session-resources");
+      const resourceLinks = resourceContent.querySelectorAll("a");
+      resourceLinks.forEach((link) => {
+        link.target = "_blank";
+      });
       window.currentSession = item.slug;
       window.airtableSession = item.aid;
     }
