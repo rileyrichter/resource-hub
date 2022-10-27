@@ -98,6 +98,7 @@ function stashCourseInfo(number, baseURL) {
   })
     .then(handleError)
     .then((data) => {
+      localStorage.setItem(`course${number}-first`, data.items[0]._id);
       localStorage.setItem(`${number}-sessions`, JSON.stringify(data.items));
     })
     .catch(function writeError(err) {

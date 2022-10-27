@@ -61,7 +61,6 @@ export default function getCourse(course) {
     localStorage.getItem(`${course}-complete`) !== null
   ) {
     fadeIn(document.querySelector(".notice-panel"));
-    fadeIn(document.querySelector(".next-course"));
   }
   progressBar.style.width = `${percent}%`;
   elPercent.innerText = percent;
